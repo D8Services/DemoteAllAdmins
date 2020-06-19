@@ -18,6 +18,7 @@
 #	
 ###############################################################
 # Tomos Tyler - 2017
+# https://github.com/D8Services/DemoteAllAdmins
 # Added Group demotion because of archaic
 # Custom solutions 2020
 
