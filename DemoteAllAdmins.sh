@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 ###############################################################
 #	Copyright (c) 2018, D8 Services Ltd.  All rights reserved.  
@@ -17,7 +17,9 @@
 #
 #	
 ###############################################################
-#
+# Tomos Tyler - 2017
+# Added Group demotion because of archaic
+# Custom solutions 2020
 
 #Single Name to not demote, or leave blank to demote all users
 doNotTouch=""
@@ -28,18 +30,20 @@ userList=$(/usr/bin/dscl . list /Users UniqueID | /usr/bin/awk '$2 > 500 { print
 
 # now loop and remove admin rights
 for u in ${userList} ; do
-# updated with dseditgroup
-if [[ "${u}" == "$doNotTouch" ]]; then
-	#skip this user
-	continue
-else
-	/usr/sbin/dseditgroup -o edit -d ${u} -t user admin
-    pgID=$(dscl . read /Users/${u} PrimaryGroupID | awk '{print $2}')
-    if [[ ! ${pgID} == "20" ]];then
-    	dscl . -delete /Users/${u} PrimaryGroupID
+	# updated with dseditgroup
+	if [[ "${u}" == "$doNotTouch" ]]; then
+		#skip this user
+		continue
+	else
+		/usr/sbin/dseditgroup -o edit -d ${u} -t user admin
+		# this should be it, but in case you are running
+		# a really old workflow lets make sure your user is not 
+		# in the Admin Group.
+		pgID=$(dscl . read /Users/${u} PrimaryGroupID | awk '{print $2}')
+		if [[ ! ${pgID} == "20" ]];then
+    		dscl . -delete /Users/${u} PrimaryGroupID
 		dscl . -create /Users/${u} PrimaryGroupID 20
-    fi
-fi
+    		fi
+	fi
 done
-
 exit 0
